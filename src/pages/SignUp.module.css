@@ -1,0 +1,129 @@
+.signup {
+  width: 100%;
+  position: relative;
+  background-color: var(--color-dimgray-200);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--padding-7xl);
+  gap: var(--gap-11xl);
+  font-family: var(--font-inter);
+  color: var(--colors-white);
+}
+
+.image1Icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.signUpForm {
+  width: 100%;
+  max-width: 400px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: var(--padding-6xl);
+  border-radius: var(--br-8xs);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.headerText {
+  font-size: var(--font-size-46xl);
+  margin-bottom: var(--gap-xl);
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-lg);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.label {
+  font-size: var(--buttons-big-size);
+  margin-bottom: var(--padding-xs);
+}
+
+.input {
+  width: 100%;
+  padding: var(--padding-xs);
+  border: 1px solid var(--color-gainsboro-100);
+  border-radius: var(--br-5xs);
+  font-size: var(--buttons-big-size);
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.primaryButton {
+  padding: var(--padding-xs) var(--padding-5xl);
+  background-color: #1677ff;
+  color: var(--colors-white);
+  border: none;
+  border-radius: var(--br-5xs);
+  cursor: pointer;
+  font-size: var(--m3-title-medium-size);
+}
+
+.primaryButton:hover {
+  background-color: #3091ff;
+}
+
+/* Responsive Design Adjustments */
+@media screen and (max-width: 750px) {
+  .headerText {
+    font-size: var(--font-size-27xl);
+  }
+  .signUpForm {
+    padding: var(--padding-4xl);
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .headerText {
+    font-size: var(--font-size-lg);
+  }
+  .signUpForm {
+    padding: var(--padding-3xl);
+  }
+  .input {
+    font-size: var(--m3-title-medium-size);
+  }
+}
+.error {
+  color: red;
+  margin-bottom: var(--gap-lg);
+  font-size: var(--buttons-big-size);
+}
+.loginRedirect {
+  margin-top: var(--gap-lg);
+  text-align: center;
+  font-size: var(--buttons-big-size);
+  color: var(--colors-white);
+}
+
+.loginLink {
+  color: #1677ff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.loginLink:hover {
+  color: #3091ff;
+}
+

@@ -1,0 +1,96 @@
+.homePageEnterPhoneNumber {
+  width: 100%;
+  position: relative;
+  background-color: var(--colors-white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--padding-7xl) var(--padding-xl);
+  gap: var(--gap-11xl);
+  font-family: var(--font-inter);
+}
+
+.header {
+  width: 100%;
+  padding: var(--padding-6xl) var(--padding-xl);
+  background-color: var(--color-gainsboro-200);
+  border-radius: var(--br-8xs);
+  text-align: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.headerText {
+  font-size: var(--m3-title-medium-size);
+  color: var(--color-gray-400);
+}
+
+.formWrapper {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xl);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-lg);
+  width: 100%;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.label {
+  font-size: var(--buttons-big-size);
+  margin-bottom: var(--padding-xs);
+}
+
+.input {
+  width: 100%;
+  padding: var(--padding-xs);
+  border: 1px solid var(--color-gainsboro-100);
+  border-radius: var(--br-5xs);
+  font-size: var(--buttons-big-size);
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.primaryButton {
+  padding: var(--padding-xs) var(--padding-5xl);
+  background-color: #1677ff;
+  color: var(--colors-white);
+  border: none;
+  border-radius: var(--br-5xs);
+  cursor: pointer;
+  font-size: var(--m3-title-medium-size);
+}
+
+.primaryButton:hover {
+  background-color: #3091ff;
+}
+
+/* Responsive Design Adjustments */
+@media screen and (max-width: 800px) {
+  .headerText {
+    font-size: var(--m3-headline-small-size);
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .headerText {
+    font-size: var(--font-size-lg);
+  }
+  .input {
+    font-size: var(--m3-title-medium-size);
+  }
+}

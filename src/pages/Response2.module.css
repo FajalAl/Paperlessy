@@ -1,0 +1,376 @@
+.paperless {
+  margin-right: -260.6px;
+  width: 1555.6px;
+  position: relative;
+  line-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  max-width: 162%;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.successIcon {
+  height: 93.3px;
+  width: 93.3px;
+  position: relative;
+}
+.successIconContainer {
+  width: 913.4px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 var(--padding-xl);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.paymentSuccess {
+  width: 495px;
+  position: relative;
+  line-height: 40px;
+  display: inline-block;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.paymentMessageContainer {
+  width: 913.2px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 var(--padding-xl);
+  box-sizing: border-box;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+.blankLine {
+  margin-block-start: 0;
+  margin-block-end: 5px;
+}
+.blankLine1 {
+  margin: 0;
+}
+.ksh,
+.text {
+  position: relative;
+}
+.text {
+  width: 964.4px;
+  display: inline-block;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.ksh {
+  align-self: stretch;
+  line-height: 54px;
+  font-weight: 600;
+  z-index: 1;
+}
+.kshWrapper {
+  width: 495px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 3.2px 0 0;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin-left: -755.2px;
+  font-size: var(--font-size-21xl);
+  color: var(--color-gray-200);
+  font-family: var(--font-poppins);
+}
+.paymentMessageContainerParent,
+.successIconContainerParent,
+.textParent {
+  align-self: stretch;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+}
+.textParent {
+  flex-direction: row;
+  flex-shrink: 0;
+  font-size: var(--m3-title-medium-size);
+  color: var(--color-gray-400);
+  font-family: var(--font-inter);
+}
+.paymentMessageContainerParent,
+.successIconContainerParent {
+  flex-direction: column;
+}
+.paymentMessageContainerParent {
+  gap: 10.1px;
+}
+.successIconContainerParent {
+  gap: var(--gap-7xl-6);
+}
+.refNumber,
+.refTimeSender {
+  position: relative;
+  line-height: 30px;
+}
+.refNumber {
+  flex: 1;
+  display: inline-block;
+  min-width: 100px;
+  max-width: 100%;
+}
+.refTimeSender {
+  font-weight: 500;
+  color: var(--color-gray-200);
+  text-align: center;
+}
+.paymentDetail {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-6xl-6);
+  max-width: 100%;
+  flex-shrink: 0;
+}
+.paymentTime {
+  flex: 1;
+  position: relative;
+  line-height: 30px;
+  display: inline-block;
+  min-width: 122px;
+  max-width: 100%;
+}
+.div {
+  position: relative;
+  line-height: 29.98px;
+  font-weight: 500;
+  color: var(--color-gray-200);
+  text-align: center;
+  white-space: nowrap;
+}
+.paymentDetail2 {
+  align-self: stretch;
+  height: 30px;
+}
+.senderName {
+  flex: 1;
+  position: relative;
+  line-height: 30px;
+  display: inline-block;
+  min-width: 116px;
+  max-width: 100%;
+}
+.favourJaleng {
+  position: relative;
+  line-height: 29.98px;
+  font-weight: 500;
+  color: var(--color-gray-200);
+  text-align: center;
+}
+.detailsRow,
+.detailsSeparator {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.detailsRow {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
+  gap: var(--gap-4xl-3);
+  flex-shrink: 0;
+}
+.detailsSeparator {
+  width: 496.3px;
+  height: 1.7px;
+  position: relative;
+  border-top: 1.7px dashed #ededed;
+}
+.amount,
+.ksh1 {
+  position: relative;
+  line-height: 30px;
+  display: inline-block;
+}
+.amount {
+  flex: 1;
+  min-width: 68px;
+  max-width: 100%;
+}
+.ksh1 {
+  font-weight: 500;
+  color: var(--color-gray-200);
+  text-align: center;
+  min-width: 86px;
+}
+.paymentDetail4 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-7xl-6);
+  max-width: 100%;
+  flex-shrink: 0;
+}
+.adminFee,
+.ksh200 {
+  position: relative;
+  line-height: 30px;
+  display: inline-block;
+}
+.adminFee {
+  flex: 1;
+  min-width: 90px;
+  max-width: 100%;
+}
+.ksh200 {
+  font-weight: 500;
+  color: var(--color-gray-200);
+  text-align: center;
+  min-width: 93px;
+}
+.amountRow {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--gap-4xl-3);
+  max-width: 100%;
+  flex-shrink: 0;
+}
+.paymentDetails,
+.paymentDetailsWrapper {
+  display: flex;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.paymentDetails {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 98.2px 0;
+  gap: var(--gap-7xl-6);
+}
+.paymentDetailsWrapper {
+  align-self: stretch;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0 var(--padding-24xl) 0 var(--padding-16xl);
+  text-align: left;
+  font-size: var(--font-size-2xl-7);
+  color: var(--color-dimgray-100);
+}
+.frameParent,
+.response1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
+}
+.frameParent {
+  align-self: stretch;
+  align-items: flex-start;
+  gap: 90.8px;
+  max-width: 100%;
+  font-size: 26.6px;
+  color: #474747;
+  font-family: var(--font-poppins);
+}
+.response1 {
+  width: 100%;
+  position: relative;
+  background-color: var(--colors-white);
+  overflow: hidden;
+  align-items: flex-end;
+  padding: 0 217px 65px;
+  box-sizing: border-box;
+  gap: 96px;
+  line-height: normal;
+  letter-spacing: normal;
+  font-size: var(--font-size-21xl);
+  color: var(--color-gray-300);
+  font-family: var(--font-emblema-one);
+}
+@media screen and (max-width: 1200px) {
+  .response1 {
+    padding-left: var(--padding-89xl);
+    padding-right: var(--padding-89xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 1050px) {
+  .ksh,
+  .paperless {
+    font-size: var(--m3-headline-large-size);
+    line-height: 18px;
+  }
+  .ksh {
+    line-height: 43px;
+  }
+  .paymentDetailsWrapper {
+    padding-right: var(--padding-2xl);
+    box-sizing: border-box;
+  }
+  .frameParent {
+    gap: 45px;
+  }
+}
+@media screen and (max-width: 750px) {
+  .paymentDetails {
+    padding-top: var(--padding-45xl);
+    padding-bottom: var(--padding-45xl);
+    box-sizing: border-box;
+  }
+  .frameParent {
+    gap: 23px;
+  }
+  .response1 {
+    gap: 48px;
+    padding-left: var(--padding-35xl);
+    padding-right: var(--padding-35xl);
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 450px) {
+  .paperless {
+    font-size: var(--m3-headline-small-size);
+    line-height: 13px;
+  }
+  .paymentSuccess {
+    font-size: 21px;
+    line-height: 32px;
+  }
+  .ksh {
+    font-size: var(--m3-headline-small-size);
+    line-height: 32px;
+  }
+  .adminFee,
+  .amount,
+  .div,
+  .favourJaleng,
+  .ksh1,
+  .ksh200,
+  .paymentTime,
+  .refNumber,
+  .refTimeSender,
+  .senderName {
+    font-size: var(--font-size-mid);
+    line-height: 24px;
+  }
+  .response1 {
+    gap: var(--gap-5xl);
+    padding-left: var(--padding-xl);
+    padding-right: var(--padding-xl);
+    box-sizing: border-box;
+  }
+}

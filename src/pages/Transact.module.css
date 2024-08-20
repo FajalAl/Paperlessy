@@ -1,0 +1,238 @@
+.transact {
+  width: 100%;
+  min-height: 100vh; /* Ensure the component takes full height of the viewport */
+  position: relative;
+  background-color: var(--background-dark);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 125px var(--padding-xl) 154px 73px;
+  box-sizing: border-box;
+  gap: 60.1px;
+  line-height: normal;
+  letter-spacing: normal;
+}
+
+.frameParent {
+  width: 1157px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 11px;
+  max-width: 100%;
+  text-align: center;
+  font-size: var(--font-size-46xl);
+  color: var(--colors-white);
+  font-family: var(--font-emblema-one);
+}
+.backgroundParent {
+  position: relative;
+  width: 100%;
+}
+
+.backgroundIcon {
+  width: 100%;
+  height: auto; /* Ensure the background image scales properly */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0; /* Place the background image behind other content */
+}
+
+.paperless {
+  margin: 0;
+  align-self: stretch;
+  position: relative;
+  font-size: inherit;
+  line-height: 22px;
+  font-weight: 400;
+  font-family: inherit;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.paperlessWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-8xs) 0 0;
+  box-sizing: border-box;
+  min-width: 260px;
+  max-width: 100%;
+}
+
+.transaction {
+  margin: 0;
+  position: relative;
+  font-size: inherit;
+  letter-spacing: -1px;
+  line-height: 70px;
+  font-weight: 700;
+  font-family: inherit;
+  z-index: 1;
+}
+
+.transactionWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--padding-72xl) var(--padding-5xs) 0 0;
+  box-sizing: border-box;
+  max-width: 100%;
+  text-align: left;
+  font-size: var(--heading-h2-header-size);
+  font-family: var(--heading-h5-lead);
+}
+
+.recentTransactions {
+  margin: 0;
+  flex: 1;
+  position: relative;
+  font-size: var(--font-size-21xl);
+  line-height: 22px;
+  font-weight: 400;
+  font-family: var(--font-el-messiri);
+  display: inline-block;
+  text-shadow: 1px 0 0#fff, 0 1px 0#fff, -1px 0 0#fff, 0-1px 0#fff;
+  min-width: 260px;
+  max-width: 100%;
+  z-index: 1;
+}
+
+.formSection {
+  width: 100%;
+  max-width: 670px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-xl);
+  padding: 0 var(--padding-xl);
+  text-align: center;
+  background-color: var(--colors-white);
+  border-radius: var(--br-5xs);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: var(--padding-7xl) var(--padding-5xs);
+}
+
+.inputGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  margin-bottom: var(--gap-xl);
+}
+
+.label {
+  font-size: var(--buttons-big-size);
+  margin-bottom: var(--padding-xs);
+  color: var(--color-gray-900);
+}
+
+.input {
+  width: 100%;
+  padding: var(--padding-xs);
+  border: 1px solid var(--color-gainsboro-100);
+  border-radius: var(--br-5xs);
+  font-size: var(--buttons-big-size);
+  color: var(--color-gray-900);
+  background-color: var(--colors-white);
+}
+
+.dateGroup {
+  display: flex;
+  gap: var(--gap-lg);
+  flex-wrap: wrap;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.primaryButton {
+  padding: var(--padding-xs) var(--padding-5xl);
+  background-color: #1677ff;
+  color: var(--colors-white);
+  border: none;
+  border-radius: var(--br-5xs);
+  cursor: pointer;
+  font-size: var(--m3-title-medium-size);
+}
+
+.primaryButton:hover {
+  background-color: #3091ff;
+}
+
+.error {
+  color: red;
+  font-size: var(--font-size-sm);
+  margin-top: var(--gap-sm);
+}
+
+/* Responsive Design Adjustments */
+@media screen and (max-width: 800px) {
+  .formSection {
+    padding: var(--padding-lg);
+  }
+
+  .label {
+    font-size: var(--m3-headline-small-size);
+  }
+
+  .input {
+    font-size: var(--m3-title-medium-size);
+  }
+
+  .primaryButton {
+    padding: var(--padding-xs) var(--padding-3xl);
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .formSection {
+    padding: var(--padding-md);
+  }
+
+  .label {
+    font-size: var(--font-size-lg);
+  }
+
+  .input {
+    font-size: var(--m3-title-medium-size);
+  }
+}
+.emailInputs {
+  position: relative;
+  z-index: 1; /* Ensure form elements are above the background */
+}
+
+.formSection, .phoneNumberInput {
+  position: relative;
+  z-index: 1; /* Ensure form elements are above the background */
+}
+
+.phoneNumberInputWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--padding-xl);
+  box-sizing: border-box;
+  position: relative;
+}
+
+.phoneNumberInput {
+  width: 100%;
+  max-width: 670px;
+  background-color: var(--colors-white);
+  border-radius: var(--br-5xs);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: var(--padding-7xl) var(--padding-5xs);
+  z-index: 1; /* Ensure it appears above the background image */
+}
