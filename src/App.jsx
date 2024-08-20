@@ -13,9 +13,11 @@ import Receipts from "./pages/Receipts";
 import Response1 from "./pages/Response1";
 import Response2 from "./pages/Response2";
 import SignUp from "./pages/SignUp";
+import SomePage from "./pages/SomePage";
 import TaxInvoice from "./pages/TaxInvoice";
 import Transact from "./pages/Transact";
 import UploadFile from "./pages/UploadFile";
+
 
 function App() {
   const action = useNavigationType();
@@ -73,6 +75,10 @@ function App() {
         title = "";
         metaDescription = "";
         break;
+        case "/somepage":
+        title = "";
+        metaDescription = "";
+        break;
       case "/uploadfile":
         title = "";
         metaDescription = "";
@@ -110,6 +116,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/crypto" element={<Crypto1 />} />
       <Route path="/uploadfile" element={<UploadFile />} />
+      <Route path="/somepage" element={<SomePage />} />
     </Routes>
   );
 }
