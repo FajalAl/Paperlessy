@@ -39,6 +39,10 @@ function App() {
         title = "";
         metaDescription = "";
         break;
+        case "/homepage":
+          title = "";
+          metaDescription = "";
+          break;
       case "/transact":
         title = "";
         metaDescription = "";
@@ -102,6 +106,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/homepage" element={<HomePage />} />
       <Route path="/transact" element={<Transact />} />
       <Route path="/homepage2" element={<HomePage />} />
       <Route
