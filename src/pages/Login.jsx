@@ -9,12 +9,23 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    
+    // Default password to force reset
+    const defaultPassword = "defaultPassword123!";
 
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
             await login(email, password);
-            navigate("/");
+            
+            // Check if the password is the default password
+            if (password === defaultPassword) {
+                // Redirect to reset password page if it's the default password
+                navigate("/reset-password");
+            } else {
+                // Otherwise, navigate to the home page
+                navigate("/");
+            }
         } catch (error) {
             setError(error.message);
         }

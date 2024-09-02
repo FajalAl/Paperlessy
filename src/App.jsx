@@ -10,6 +10,7 @@ import HomePage from "./pages/HomePage";
 import HomePageEnterPhoneNumber from "./pages/HomePageEnterPhoneNumber";
 import Login from "./pages/Login";
 import Receipts from "./pages/Receipts";
+import ResetPassword from "./pages/ResetPassword";
 import Response1 from "./pages/Response1";
 import Response2 from "./pages/Response2";
 import SignUp from "./pages/SignUp";
@@ -75,6 +76,10 @@ function App() {
         title = "";
         metaDescription = "";
         break;
+      case "/reset-password":
+        title = "";
+        metaDescription = "";
+        break;
       case "/crypto":
         title = "";
         metaDescription = "";
@@ -119,6 +124,7 @@ function App() {
       <Route path="/response" element={<Response1 />} />
       <Route path="/receipts" element={<Receipts />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/crypto" element={<Crypto1 />} />
       <Route path="/uploadfile" element={<UploadFile />} />
       <Route path="/somepage" element={<SomePage />} />
