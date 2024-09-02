@@ -9,11 +9,12 @@
   justify-content: flex-start;
   padding: var(--padding-7xl) 0 167px;
   gap: 79px;
-  font-family: var(--font-inter);
+  font-family: var(--font-inter); /* Fixed font */
 }
 
 .frameParent {
   width: 100%;
+  height: 300px; /* Adjust height as needed */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -23,50 +24,41 @@
   text-align: center;
   font-size: var(--font-size-46xl);
   color: black; /* Text color */
-  font-family: var(--font-emblema-one);
+  font-family: var(--font-emblema-one); /* Fixed font */
+  background-size: cover; /* Ensure background covers the section */
+  background-position: center;
+  background-repeat: no-repeat; /* Prevent background image from repeating */
+}
+.receiptsWrapper {
+  position: absolute; /* Position text absolutely within the section */
+  top: 20px; /* Adjust top positioning as needed */
+  width: 100%;
+  
+}
+
+.receiptsText {
+  font-size: 4rem; /* Larger font size */
+  font-weight: 700;
+  color: black; /* Text color */
+  margin: 0; /* Remove default margins */
+  padding: 0; /* Remove default padding */
 }
 .paperlessWrapper,
 .receiveEReceiptWrapper {
   display: flex;
   justify-content: center;
-  padding: var(--padding-8xs) 0;
+  align-items: center; /* Center content vertically */
   width: 100%;
 }
-
-.paperless {
-  font-size: var(--font-size-14xl); /* Adjusted size */
-  line-height: 1.2;
-  font-weight: 700;
-  color: black; /* Text color */
-  text-align: center;
-  margin-bottom: var(--padding-4xs); /* Space below */
-}
-
-.receiptsWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--padding-72xl) var(--padding-5xs);
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
-.receiptsText {
-  margin: 0;
-  font-size: var(--font-size-20xl); /* Adjusted size */
-  line-height: 1.2;
-  font-weight: 400;
-  color: black; /* Text color */
-}
-
+.paperless,
 .receiveEReceipt {
-  font-size: var(--font-size-14xl); /* Adjusted size */
-  line-height: 1.2;
+  font-size: 2.1rem; /* Adjusted font size */
   font-weight: 700;
   color: black; /* Text color */
-  text-align: center;
-  margin-top: var(--padding-4xs); /* Space above */
+  margin: 0; /* Remove default margins */
+  padding: 0 1rem; /* Adjust padding for spacing */
 }
+
 .mainContent {
   width: 100%;
   max-width: 670px;
@@ -79,7 +71,7 @@
 }
 
 .fillTheForm {
-  font-size: var(--m3-title-medium-size);
+  font-size: 1.2rem; /* Adjusted size */
   font-weight: 500;
   line-height: 26px;
 }
@@ -99,7 +91,7 @@
 }
 
 .label {
-  font-size: var(--buttons-big-size);
+  font-size: 1rem; /* Adjusted size */
   margin-bottom: var(--padding-xs);
 }
 
@@ -108,7 +100,7 @@
   padding: var(--padding-xs);
   border: 1px solid var(--color-gainsboro-100);
   border-radius: var(--br-5xs);
-  font-size: var(--buttons-big-size);
+  font-size: 1rem; /* Adjusted size */
 }
 
 .dateGroup {
@@ -129,7 +121,7 @@
   border: none;
   border-radius: var(--br-5xs);
   cursor: pointer;
-  font-size: var(--m3-title-medium-size);
+  font-size: 1.2rem; /* Adjusted size */
 }
 
 .primaryButton:hover {
@@ -138,37 +130,32 @@
 
 /* Responsive Design Adjustments */
 @media screen and (max-width: 800px) {
-  .paperless2 {
-    font-size: var(--font-size-27xl);
-  }
-  .receipts1 {
-    font-size: var(--font-size-27xl);
-    line-height: 51px;
+  .paperless,
+  .receiptsText,
+  .receiveEReceipt {
+    font-size: 1.8rem; /* Adjust font size for smaller screens */
   }
   .mainContent {
     padding: 0 var(--padding-lg);
   }
   .fillTheForm {
-    font-size: var(--m3-headline-small-size);
+    font-size: 1rem;
   }
   .inputGroup {
     width: 100%;
   }
 }
 
-@media screen and (max-width: 450px) {
-  .paperless2 {
-    font-size: var(--font-size-20xl);
-    line-height: 13px;
-  }
-  .receipts1 {
-    font-size: 34px;
-    line-height: 38px;
+@media screen and (max-width: 890px) {
+  .paperless,
+  .receiptsText,
+  .receiveEReceipt {
+    font-size: 2.5rem; /* Further adjust font size */
   }
   .fillTheForm {
-    font-size: var(--font-size-lg);
+    font-size: 0.9rem;
   }
   .input {
-    font-size: var(--m3-title-medium-size);
+    font-size: 1rem;
   }
 }

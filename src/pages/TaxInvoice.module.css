@@ -129,3 +129,8 @@
   color: var(--color-gray-400);
   font-family: var(--font-inter);
 }
+.error {
+  color: var(--color-red);
+  font-weight: bold;
+  margin: 20px 0;
+}

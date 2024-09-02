@@ -1,13 +1,31 @@
+import { addDoc, collection } from "firebase/firestore";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase/firebaseConfig";
 import styles from "./HomePageEnterPhoneNumber.module.css";
 
 const HomePageEnterPhoneNumber = () => {
   const navigate = useNavigate();
 
-  const handleFormSubmit = useCallback((event) => {
+  const handleFormSubmit = useCallback(async (event) => {
     event.preventDefault();
-    navigate("/response");
+    
+    const name = event.target.name.value;
+    const phone = event.target.phone.value;
+
+    try {
+      // Add the submitted data to Firestore
+      await addDoc(collection(db, "receipts"), {
+        name: name,
+        phone: phone,
+        createdAt: new Date()
+      });
+      alert("Information submitted successfully!");
+      navigate("/response");
+    } catch (error) {
+      console.error("Error submitting information: ", error);
+      alert("Failed to submit information. Please try again.");
+    }
   }, [navigate]);
 
   return (

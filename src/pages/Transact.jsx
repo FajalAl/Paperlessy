@@ -8,12 +8,13 @@ const Transact = () => {
   const [receiverNumber, setReceiverNumber] = useState("");
   const [amount, setAmount] = useState("");
   const [error, setError] = useState(""); // State for error messages
+  const [responseMessage, setResponseMessage] = useState(""); // State for API response message
 
   const onPaperlessTextClick = useCallback(() => {
     navigate("/");
   }, [navigate]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission behavior
 
     // Validate sender and receiver numbers
@@ -35,7 +36,19 @@ const Transact = () => {
     setError("");
 
     // Handle transaction data
-    console.log("Transaction data:", { senderNumber, receiverNumber, amount });
+    try {
+      const response = await fetch('http://localhost:3000/send-money', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sender: senderNumber, receiver: receiverNumber, amount: numericAmount })
+      });
+
+      const result = await response.json();
+      setResponseMessage(result.message);
+    } catch (error) {
+      console.error("Error:", error);
+      setError("An error occurred while processing the transaction.");
+    }
   };
 
   return (
@@ -125,6 +138,7 @@ const Transact = () => {
                 </button>
               </div>
             </form>
+            {responseMessage && <div className={styles.responseMessage}>{responseMessage}</div>}
           </div>
         </div>
       </section>

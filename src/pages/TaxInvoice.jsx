@@ -1,24 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import getReceiptDetails from './getReceiptDetails'; // Adjust the import path
 import styles from "./TaxInvoice.module.css";
 
-const TaxInvoice = () => {
-  const [invoiceData, setInvoiceData] = useState({
-    supermarketName: "Supermarket Name",
-    date: "04-04-2022 11:30",
-    operator: "ABRAHAMS, LEIGH-RIN",
-    modeOfPayment: "773299960",
-    cashBackEarned: "0.23",
-    slipNo: "61788.002001",
-    items: [
-      {
-        description: "MINERAL WATER STILL",
-        qty: 1,
-        price: 22.99,
-      },
-    ],
-  });
+// Utility to parse query parameters
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
+const TaxInvoice = () => {
+  const query = useQuery();
+  const [invoiceData, setInvoiceData] = useState(null);
+  const [error, setError] = useState(null);
+
+  const supermarketName = query.get('supermarketName');
+  const date = query.get('date'); // Use only the 'date' from receipts.jsx
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getReceiptDetails({ supermarketName, date });
+  
+        if (data.length === 0) {
+          setError('No receipts available for the specified criteria.');
+        } else {
+          setInvoiceData(data[0]); // Assuming you want the first matching receipt
+        }
+      } catch (error) {
+        console.error('Error fetching receipt data:', error);
+        setError('An error occurred while fetching the receipt.');
+      }
+    };
+  
+    fetchData();
+  }, [supermarketName, date]);
+
+  if (error) {
+    return <div className={styles.error}>{error}</div>;
+  }
+
+  if (!invoiceData) {
+    return <p>Loading...</p>;
+  }
+
+  // Ensure invoiceData.items is a valid array before reducing
   const calculateTotal = () => {
+    if (!Array.isArray(invoiceData.items)) return "0.00"; // Return 0 if items is not an array
     return invoiceData.items.reduce((total, item) => total + item.price * item.qty, 0).toFixed(2);
   };
 
@@ -46,25 +73,29 @@ const TaxInvoice = () => {
       </section>
 
       <div className={styles.itemsHeaderWrapper}>
-        {invoiceData.items.map((item, index) => (
-          <div className={styles.itemsHeader} key={index}>
-            <div className={styles.descriptionMineralWaterContainer}>
-              <p className={styles.date}>
-                <b className={styles.description}>Description:</b> {item.description}
-              </p>
+        {invoiceData.items && invoiceData.items.length > 0 ? (
+          invoiceData.items.map((item, index) => (
+            <div className={styles.itemsHeader} key={index}>
+              <div className={styles.descriptionMineralWaterContainer}>
+                <p className={styles.date}>
+                  <b className={styles.description}>Description:</b> {item.description}
+                </p>
+              </div>
+              <div className={styles.descriptionMineralWaterContainer}>
+                <p className={styles.date}>
+                  <b>QTY:</b> {item.qty}
+                </p>
+              </div>
+              <div className={styles.priceInclVatContainer}>
+                <p className={styles.date}>
+                  <b>Price (Incl Vat):</b> {item.price.toFixed(2)} #
+                </p>
+              </div>
             </div>
-            <div className={styles.descriptionMineralWaterContainer}>
-              <p className={styles.date}>
-                <b>QTY:</b> {item.qty}
-              </p>
-            </div>
-            <div className={styles.priceInclVatContainer}>
-              <p className={styles.date}>
-                <b>Price (Incl Vat):</b> {item.price.toFixed(2)} #
-              </p>
-            </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No items found for the selected criteria.</p>
+        )}
       </div>
       
       <div className={styles.totalWrapper}>

@@ -1,16 +1,42 @@
-import React, { useState } from "react";
+import { getAuth, signOut } from "firebase/auth";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext"; // Adjust the path if needed
 import styles from "./HomePage.module.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth(); // Use AuthContext to get currentUser
   const [userLoggedIn, setUserLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserLoggedIn(true);
+      } else {
+        setUserLoggedIn(false);
+        navigate("/login"); // Redirect to login if not logged in
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
 
   const handleNavigation = (path) => {
     if (path === "#learnMore") {
       document.querySelector(path).scrollIntoView({ behavior: "smooth" });
     } else {
       navigate(path);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(getAuth());
+      navigate("/login");
+    } catch (error) {
+      console.error("Sign out error:", error);
     }
   };
 
@@ -26,9 +52,15 @@ const HomePage = () => {
         <button className={styles.receiptsButton} onClick={() => handleNavigation("/receipts")}>
           Receipts
         </button>
-        <button className={styles.signUpButton} onClick={() => handleNavigation("/signup")}>
-          Sign Up
-        </button>
+        {userLoggedIn ? (
+          <button className={styles.signUpButton} onClick={handleSignOut}>
+            Log Out
+          </button>
+        ) : (
+          <button className={styles.signUpButton} onClick={() => handleNavigation("/signup")}>
+            Sign Up
+          </button>
+        )}
         <button className={styles.loginButton} onClick={() => handleNavigation("/login")}>
           Log In
         </button>
