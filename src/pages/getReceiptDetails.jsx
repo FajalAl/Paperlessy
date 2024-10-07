@@ -1,13 +1,15 @@
 import { collection, getDoc, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../firebase/firebaseConfig.js'; // Adjust the path according to the file's location
+import { db } from '../firebase/firebaseConfig.js';
 
 async function getReceiptDetails({ supermarketName, date }) {
   try {
-    // Query for receipts using supermarket name and date
+    const userId = await getAuthenticatedUserId();  // Ensure you fetch the authenticated user's ID
+
     const receiptQuery = query(
       collection(db, 'supermarket_receipts'),
       where('supermarket_name', '==', supermarketName),
-      where('purchase_date', '==', date) // Use '==' to filter by a specific date
+      where('purchase_date', '==', date),
+      where('user_id', '==', userId) // Ensure this is the correct field matching the authenticated user
     );
     const receiptSnap = await getDocs(receiptQuery);
 
@@ -15,12 +17,11 @@ async function getReceiptDetails({ supermarketName, date }) {
       return []; // No receipts found
     }
 
-    // Process receipts
+    // Continue processing receipts as before
     const receipts = await Promise.all(receiptSnap.docs.map(async (doc) => {
       const receiptData = doc.data();
       const receiptId = doc.id;
 
-      // Fetch related purchases
       const purchasesQuery = query(
         collection(db, 'supermarket_purchases'),
         where('receipt_id', '==', receiptId)
@@ -28,23 +29,20 @@ async function getReceiptDetails({ supermarketName, date }) {
       const purchasesSnap = await getDocs(purchasesQuery);
       const purchases = purchasesSnap.docs.map(doc => doc.data());
 
-      // Fetch customer details
-      const userRef = doc(db, 'common_users', receiptData.user_id);
+      const userRef = doc(db, 'common_users', userId); // Adjust to use userId
       const userSnap = await getDoc(userRef);
       if (!userSnap.exists()) {
         throw new Error('User not found');
       }
       const userData = userSnap.data();
 
-      // Fetch transaction details
       const transactionQuery = query(
         collection(db, 'supermarketdata_transactions'),
-        where('customer_id', '==', userData.email)
+        where('customer_id', '==', userId) // Adjust to use userId
       );
       const transactionSnap = await getDocs(transactionQuery);
       const transactionData = transactionSnap.docs.map(doc => doc.data())[0];
 
-      // Fetch supermarket details
       const supermarketRef = doc(db, 'supermarketdata_supermarkets', receiptData.supermarket_id);
       const supermarketSnap = await getDoc(supermarketRef);
       if (!supermarketSnap.exists()) {
@@ -56,8 +54,8 @@ async function getReceiptDetails({ supermarketName, date }) {
         supermarketName: receiptData.supermarket_name,
         date: receiptData.purchase_date,
         operator: supermarketData.operator_name,
-        modeOfPayment: transactionData.mode_of_payment,
-        cashBackEarned: "0.23", // This stays constant
+        modeOfPayment: transactionData?.mode_of_payment ?? 'N/A',
+        cashBackEarned: "0.23",
         slipNo: receiptId,
         items: purchases.map(purchase => ({
           description: purchase.item_name,

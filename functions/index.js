@@ -16,7 +16,7 @@ try {
   );
 } catch (error) {
   console.error('Error loading service account key:', error);
-  process.exit(1); // Exit if the service account key fails to load
+  process.exit(1);
 }
 
 // Initialize Firebase Admin SDK
@@ -26,119 +26,56 @@ try {
   });
 } catch (error) {
   console.error('Error initializing Firebase Admin SDK:', error);
-  process.exit(1); // Exit if Firebase Admin initialization fails
+  process.exit(1);
 }
 
 const db = admin.firestore();
 
-// Function to create or update the combined Firestore document
-async function updateCombinedDocument() {
+async function fetchCombinedUserData(userId) {
   try {
-    // Fetch common users and build a lookup
-    const commonUsersSnapshot = await db.collection('common_users').get();
-    const commonUsers = commonUsersSnapshot.docs.reduce((acc, doc) => {
-      acc[doc.id] = {
-        email: doc.data().email,
+    const supermarketPurchasesSnapshot = await db.collection('supermarket_purchases')
+      .where('user_id', '==', userId)
+      .get();
+
+    console.log(`Fetched ${supermarketPurchasesSnapshot.size} purchases for user ${userId}.`);
+
+    const combinedPurchases = [];
+
+    supermarketPurchasesSnapshot.forEach(doc => {
+      const data = doc.data();
+      const combinedPurchase = {
+        created_at: data.created_at,
+        docId: doc.id,
+        item_name: data.item_name,
+        price_per_unit: data.price_per_unit,
+        quantity: data.quantity,
+        receipt_id: data.receipt_id,
+        total_price: data.total_price,
       };
-      return acc;
-    }, {});
+      combinedPurchases.push(combinedPurchase);
+    });
 
-    // Fetch supermarket receipts
-    const receiptsSnapshot = await db.collection('supermarket_receipts').get();
-    const receipts = receiptsSnapshot.docs.reduce((acc, doc) => {
-      const data = doc.data();
-      if (commonUsers[data.user_id]) {
-        acc[data.user_id] = {
-          purchase_date: data.purchase_date,
-          supermarket_name: data.supermarket_name,
-          total_cost: data.total_cost,
-        };
-      }
-      return acc;
-    }, {});
-
-    // Fetch supermarket purchases
-    const purchasesSnapshot = await db.collection('supermarket_purchases').get();
-    const purchases = purchasesSnapshot.docs.reduce((acc, doc) => {
-      const data = doc.data();
-      const receipt = receipts[data.receipt_id];
-      if (receipt) {
-        if (!acc[data.receipt_id]) {
-          acc[data.receipt_id] = [];
-        }
-        acc[data.receipt_id].push({
-          item_name: data.item_name,
-          quantity: data.quantity,
-          total_price: data.total_price,
-        });
-      }
-      return acc;
-    }, {});
-
-    // Fetch supermarket data transactions
-    const transactionsSnapshot = await db.collection('supermarketdata_transactions').get();
-    const transactions = transactionsSnapshot.docs.reduce((acc, doc) => {
-      const data = doc.data();
-      if (commonUsers[data.customer_id]) {
-        acc[data.customer_id] = {
-          mode_of_payment: data.mode_of_payment,
-        };
-      }
-      return acc;
-    }, {});
-
-    // Fetch supermarket data supermarkets
-    const supermarketsSnapshot = await db.collection('supermarketdata_supermarkets').get();
-    const supermarkets = supermarketsSnapshot.docs.reduce((acc, doc) => {
-      const data = doc.data();
-      acc[data.name] = {
-        operator_name: data.operator_name,
-      };
-      return acc;
-    }, {});
-
-    // Combine data for each user
-    for (const userId in commonUsers) {
-      const userData = commonUsers[userId];
-      const userReceipts = Object.values(receipts).filter(r => r.user_id === userId);
-      const userTransactions = transactions[userId] || {};
-
-      const combinedData = {
-        user_id: userId,
-        email: userData.email,
-        receipts: userReceipts.map(receipt => ({
-          ...receipt,
-          purchases: purchases[receipt.receipt_id] || [],
-          operator_name: supermarkets[receipt.supermarket_name]?.operator_name || 'Unknown',
-        })),
-        transactions: userTransactions,
-      };
-
-      // Save the combined data to a Firestore document
-      const combinedDocRef = db.collection('combined_data').doc(userId);
-      await combinedDocRef.set(combinedData, { merge: true });
-
-      console.log(`Combined document for user ${userId} updated successfully.`);
+    if (combinedPurchases.length > 0) {
+      const combinedPurchasesRef = db.collection('combined_purchases').doc(`${userId}`);
+      await combinedPurchasesRef.set({ user_id: userId, purchases: combinedPurchases });
+      console.log(`Combined purchases for user ${userId} created successfully.`);
+    } else {
+      console.log(`No purchases found for user ${userId}.`);
     }
+
   } catch (error) {
-    console.error('Error updating combined document:', error);
+    console.error('Error fetching combined user data:', error);
   }
 }
 
-// Firestore triggers for updating the combined document
-export const onSupermarketReceiptsChange = functions.firestore
-  .document('supermarket_receipts/{docId}')
+// Firestore triggers for updating the combined purchases
+export const onSupermarketPurchasesChange = functions.firestore
+  .document('supermarket_purchases/{docId}')
   .onWrite(async (change, context) => {
-    console.log(`Document ${context.params.docId} changed in supermarket_receipts`);
-    await updateCombinedDocument();
+    const userId = change.after.exists ? change.after.data().user_id : change.before.data().user_id;
+    console.log(`Triggered for userId: ${userId}`);
+    await fetchCombinedUserData(userId);
   });
 
-export const onSupermarketDataTransactionsChange = functions.firestore
-  .document('supermarketdata_transactions/{docId}')
-  .onWrite(async (change, context) => {
-    console.log(`Document ${context.params.docId} changed in supermarketdata_transactions`);
-    await updateCombinedDocument();
-  });
-
-// Initial function call to create the combined document
-updateCombinedDocument();
+// Initial function call to fetch combined user data for a specific user
+fetchCombinedUserData(10); // Example user ID
