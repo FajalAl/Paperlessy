@@ -13,12 +13,12 @@ const Receipts = () => {
   }, [navigate]);
 
   const onReceiveEReceiptClick = useCallback(
-    async (event) => {
+    (event) => {
       event.preventDefault();
 
       if (supermarketName && date) {
-        // Navigate to TaxInvoice with query parameters or use state
-        navigate(`/tax-invoice?supermarketName=${supermarketName}&date=${date}`);
+        // Navigate to UserReceipt with query parameters
+        navigate(`/userreceipt?supermarketName=${encodeURIComponent(supermarketName)}&date=${encodeURIComponent(date)}`);
       } else {
         // Handle empty form submission
         alert("Please fill in all fields.");

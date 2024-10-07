@@ -5,6 +5,7 @@ import {
   useLocation,
   useNavigationType,
 } from "react-router-dom";
+import ParentComponent from "./components/ParentComponent";
 import Crypto1 from "./pages/Crypto1";
 import HomePage from "./pages/HomePage";
 import HomePageEnterPhoneNumber from "./pages/HomePageEnterPhoneNumber";
@@ -18,6 +19,7 @@ import SomePage from "./pages/SomePage";
 import TaxInvoice from "./pages/TaxInvoice";
 import Transact from "./pages/Transact";
 import UploadFile from "./pages/UploadFile";
+import UserReceipt from "./pages/UserReceipt";
 
 
 function App() {
@@ -92,6 +94,14 @@ function App() {
         title = "";
         metaDescription = "";
         break;
+      case "/userreceipt":
+        title = "";
+        metaDescription = "";
+        break;
+      case "/receipt/:receiptId":
+        title = "Receipt Details";
+        metaDescription = "Detailed view of your receipt.";
+        break;
     }
 
     if (title) {
@@ -126,8 +136,10 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/crypto" element={<Crypto1 />} />
-      <Route path="/uploadfile" element={<UploadFile />} />
+      <Route path="/uploadfile" element={<UploadFile />} />s
       <Route path="/somepage" element={<SomePage />} />
+      <Route path="/userreceipt" element={<UserReceipt />} />
+      <Route path="/receipt/:receiptId" element={<ParentComponent />} />
     </Routes>
   );
 }
