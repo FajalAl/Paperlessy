@@ -1,94 +1,85 @@
-import { doc, getFirestore, runTransaction } from "firebase/firestore"; // Import necessary Firestore functions 
-import { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./Transact.module.css";
+// src/components/Transact.jsx
+
+import { doc, getFirestore, runTransaction } from 'firebase/firestore'; // Firestore imports
+import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Transact.module.css';
 
 const Transact = () => {
   const navigate = useNavigate();
-  const [senderNumber, setSenderNumber] = useState(""); // State for sender's phone number
-  const [receiverNumber, setReceiverNumber] = useState(""); // State for receiver's phone number
-  const [amount, setAmount] = useState(""); // State for transaction amount
-  const [error, setError] = useState(""); // State for error messages
-  const [responseMessage, setResponseMessage] = useState(""); // State for transaction response message
+  const [senderNumber, setSenderNumber] = useState(''); 
+  const [receiverNumber, setReceiverNumber] = useState(''); 
+  const [amount, setAmount] = useState(''); 
+  const [error, setError] = useState(''); 
+  const [responseMessage, setResponseMessage] = useState(''); 
 
   const onPaperlessTextClick = useCallback(() => {
-    navigate("/"); // Navigate to the homepage
+    navigate('/'); 
   }, [navigate]);
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault();
     const firestore = getFirestore();
 
     // Validate sender and receiver numbers (must be 9 digits)
-    const senderNumberValid = /^\d{9}$/.test(senderNumber); 
-    const receiverNumberValid = /^\d{9}$/.test(receiverNumber); 
+    const senderNumberValid = /^\d{9}$/.test(senderNumber);
+    const receiverNumberValid = /^\d{9}$/.test(receiverNumber);
+
     if (!senderNumberValid || !receiverNumberValid) {
-      setError("Sender and receiver numbers must be exactly 9 digits.");
+      setError('Sender and receiver numbers must be exactly 9 digits.');
       return;
     }
 
-    const numericAmount = parseFloat(amount); // Parse the amount to a number
+    // Validate amount
+    const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount < 100 || numericAmount > 10000) {
-      setError("Amount must be between 100 and 10,000.");
+      setError('Amount must be between 100 and 10,000.');
       return;
     }
 
-    // Clear error if validation passes
-    setError("");
+    setError('');
 
-    // Firestore transaction logic
     try {
-      console.log("Sender Number:", senderNumber); // Debugging
-      console.log("Receiver Number:", receiverNumber); // Debugging
-
       await runTransaction(firestore, async (transaction) => {
-        const senderRef = doc(firestore, "transactions_users", senderNumber); // Reference to the sender
-        const receiverRef = doc(firestore, "transactions_users", receiverNumber); // Reference to the receiver
-        
-        console.log("Sender Reference:", senderRef); // Debugging
-        console.log("Receiver Reference:", receiverRef); // Debugging
-        
+        const senderRef = doc(firestore, 'transactions_users', senderNumber);
+        const receiverRef = doc(firestore, 'transactions_users', receiverNumber);
+
         const senderDoc = await transaction.get(senderRef);
         const receiverDoc = await transaction.get(receiverRef);
 
-        if (!senderDoc.exists()) {
-          throw new Error("Sender does not exist.");
-        }
-
-        if (!receiverDoc.exists()) {
-          throw new Error("Receiver does not exist.");
-        }
+        if (!senderDoc.exists()) throw new Error('Sender does not exist.');
+        if (!receiverDoc.exists()) throw new Error('Receiver does not exist.');
 
         const senderData = senderDoc.data();
         const receiverData = receiverDoc.data();
 
-        // Check if the sender has sufficient balance
         if (senderData.balance < numericAmount) {
-          throw new Error("Insufficient balance.");
+          throw new Error('Insufficient balance.');
         }
 
         // Update balances
-        const newSenderBalance = senderData.balance - numericAmount; // Deduct amount from sender's balance
-        const newReceiverBalance = receiverData.balance + numericAmount; // Add amount to receiver's balance
+        const newSenderBalance = senderData.balance - numericAmount;
+        const newReceiverBalance = receiverData.balance + numericAmount;
 
-        transaction.update(senderRef, { balance: newSenderBalance }); // Update sender's balance
-        transaction.update(receiverRef, { balance: newReceiverBalance }); // Update receiver's balance
+        transaction.update(senderRef, { balance: newSenderBalance });
+        transaction.update(receiverRef, { balance: newReceiverBalance });
 
-        // Create a new transaction record
+        // Log transaction in Firestore
         const transactionData = {
           amount: numericAmount,
-          created_at: new Date(), // Current date and time
-          fee: numericAmount < 1000 ? 2 : 5, // Fee structure
-          receiver_phone: Number(receiverNumber), // Convert to number
-          sender_phone: Number(senderNumber), // Convert to number
+          created_at: new Date(),
+          fee: numericAmount < 1000 ? 2 : 5,
+          receiver_phone: Number(receiverNumber),
+          sender_phone: Number(senderNumber),
         };
-        await transaction.set(doc(firestore, "transactions_transactions"), transactionData); // Save transaction record
+
+        await transaction.set(doc(firestore, 'transactions_transactions'), transactionData);
       });
 
-      setResponseMessage("Transaction successful!"); // Set success message
+      setResponseMessage('Transaction successful!');
     } catch (error) {
-      console.error("Error during transaction:", error);
-      setError(error.message); // Set error message
+      console.error('Error during transaction:', error);
+      setError(error.message);
     }
   };
 
