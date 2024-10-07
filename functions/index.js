@@ -1,3 +1,6 @@
+// functions/index.js
+
+import cors from 'cors';
 import admin from 'firebase-admin';
 import functions from 'firebase-functions';
 import { readFileSync } from 'fs';
@@ -8,7 +11,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load serviceAccountKey.json using fs
+// Load Firebase service account credentials
 let serviceAccount;
 try {
   serviceAccount = JSON.parse(
@@ -20,62 +23,87 @@ try {
 }
 
 // Initialize Firebase Admin SDK
-try {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-} catch (error) {
-  console.error('Error initializing Firebase Admin SDK:', error);
-  process.exit(1);
-}
-
-const db = admin.firestore();
-
-async function fetchCombinedUserData(userId) {
+if (!admin.apps.length) {
   try {
-    const supermarketPurchasesSnapshot = await db.collection('supermarket_purchases')
-      .where('user_id', '==', userId)
-      .get();
-
-    console.log(`Fetched ${supermarketPurchasesSnapshot.size} purchases for user ${userId}.`);
-
-    const combinedPurchases = [];
-
-    supermarketPurchasesSnapshot.forEach(doc => {
-      const data = doc.data();
-      const combinedPurchase = {
-        created_at: data.created_at,
-        docId: doc.id,
-        item_name: data.item_name,
-        price_per_unit: data.price_per_unit,
-        quantity: data.quantity,
-        receipt_id: data.receipt_id,
-        total_price: data.total_price,
-      };
-      combinedPurchases.push(combinedPurchase);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
     });
-
-    if (combinedPurchases.length > 0) {
-      const combinedPurchasesRef = db.collection('combined_purchases').doc(`${userId}`);
-      await combinedPurchasesRef.set({ user_id: userId, purchases: combinedPurchases });
-      console.log(`Combined purchases for user ${userId} created successfully.`);
-    } else {
-      console.log(`No purchases found for user ${userId}.`);
-    }
-
   } catch (error) {
-    console.error('Error fetching combined user data:', error);
+    console.error('Error initializing Firebase Admin SDK:', error);
+    process.exit(1);
   }
 }
 
-// Firestore triggers for updating the combined purchases
-export const onSupermarketPurchasesChange = functions.firestore
-  .document('supermarket_purchases/{docId}')
-  .onWrite(async (change, context) => {
-    const userId = change.after.exists ? change.after.data().user_id : change.before.data().user_id;
-    console.log(`Triggered for userId: ${userId}`);
-    await fetchCombinedUserData(userId);
-  });
+const db = admin.firestore();
+const corsMiddleware = cors({ origin: true });
 
-// Initial function call to fetch combined user data for a specific user
-fetchCombinedUserData(10); // Example user ID
+// Cloud Function to process payment between sender and receiver
+export const processPayment = functions.https.onRequest(async (req, res) => {
+  // Apply CORS
+  corsMiddleware(req, res, async () => {
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    const { senderNumber, receiverNumber, amount } = req.body;
+
+    // Input validation
+    if (!senderNumber || !receiverNumber || !amount) {
+      return res.status(400).json({ error: 'Sender, receiver, and amount are required fields.' });
+    }
+
+    // Validate amount
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount < 100 || numericAmount > 10000) {
+      return res.status(400).json({ error: 'Amount must be between 100 and 10,000.' });
+    }
+
+    try {
+      // Start Firestore transaction
+      await db.runTransaction(async (transaction) => {
+        const senderRef = db.collection('transactions_users').doc(senderNumber);
+        const receiverRef = db.collection('transactions_users').doc(receiverNumber);
+
+        // Fetch sender and receiver documents
+        const senderDoc = await transaction.get(senderRef);
+        const receiverDoc = await transaction.get(receiverRef);
+
+        if (!senderDoc.exists) throw new Error('Sender does not exist.');
+        if (!receiverDoc.exists) throw new Error('Receiver does not exist.');
+
+        const senderData = senderDoc.data();
+        const receiverData = receiverDoc.data();
+
+        // Check sender balance
+        if (senderData.balance < numericAmount) {
+          throw new Error('Insufficient balance.');
+        }
+
+        // Update balances
+        const newSenderBalance = senderData.balance - numericAmount;
+        const newReceiverBalance = receiverData.balance + numericAmount;
+
+        transaction.update(senderRef, { balance: newSenderBalance });
+        transaction.update(receiverRef, { balance: newReceiverBalance });
+
+        // Create transaction record
+        const fee = numericAmount < 1000 ? 2 : 5;
+        const transactionData = {
+          amount: numericAmount,
+          created_at: new Date(),
+          fee,
+          receiver_phone: Number(receiverNumber),
+          sender_phone: Number(senderNumber),
+        };
+
+        const transactionRef = db.collection('transactions_transactions').doc();
+        transaction.set(transactionRef, transactionData);
+      });
+
+      return res.status(200).json({ message: 'Transaction successful!' });
+    } catch (error) {
+      console.error('Error during transaction:', error);
+      return res.status(500).json({ error: 'Transaction failed.' });
+    }
+  });
+});
