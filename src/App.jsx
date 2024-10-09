@@ -10,14 +10,15 @@ import Crypto1 from "./pages/Crypto1";
 import HomePage from "./pages/HomePage";
 import HomePageEnterPhoneNumber from "./pages/HomePageEnterPhoneNumber";
 import Login from "./pages/Login";
-import Receipts from "./pages/Receipts";
+import Receipt from "./pages/Receipt";
 import ResetPassword from "./pages/ResetPassword";
 import Response1 from "./pages/Response1";
 import Response2 from "./pages/Response2";
 import SignUp from "./pages/SignUp";
 import SomePage from "./pages/SomePage";
-import TaxInvoice from "./pages/TaxInvoice";
+//import TaxInvoice from "./pages/TaxInvoice";
 import Transact from "./pages/Transact";
+import TransactionHistory from "./pages/TransactionHistory";
 import UploadFile from "./pages/UploadFile";
 import UserReceipt from "./pages/UserReceipt";
 
@@ -50,6 +51,10 @@ function App() {
         title = "";
         metaDescription = "";
         break;
+      case "/transaction-history":
+        title = "";
+        metaDescription = "";
+        break;
       case "/home-page-enter-phone-number":
         title = "";
         metaDescription = "";
@@ -58,10 +63,10 @@ function App() {
         title = "";
         metaDescription = "";
         break;
-      case "/tax-invoice":
-        title = "";
-        metaDescription = "";
-        break;
+      //case "/tax-invoice":
+       // title = "";
+       // metaDescription = "";
+        //break;
       case "/signup":
         title = "";
         metaDescription = "";
@@ -70,7 +75,7 @@ function App() {
         title = "";
         metaDescription = "";
         break;
-      case "/receipts":
+      case "/receipt":
         title = "";
         metaDescription = "";
         break;
@@ -129,16 +134,17 @@ function App() {
         element={<HomePageEnterPhoneNumber />}
       />
       <Route path="/response1" element={<Response2 />} />
-      <Route path="/tax-invoice" element={<TaxInvoice />} />
+    
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/response" element={<Response1 />} />
-      <Route path="/receipts" element={<Receipts />} />
+      <Route path="/receipt" element={<Receipt />} />
+      <Route path="/response" element={<Response1 />} /> 
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/crypto" element={<Crypto1 />} />
       <Route path="/uploadfile" element={<UploadFile />} />s
       <Route path="/somepage" element={<SomePage />} />
       <Route path="/userreceipt" element={<UserReceipt />} />
+      <Route path="/transaction-history" element={<TransactionHistory />} />
       <Route path="/receipt/:receiptId" element={<ParentComponent />} />
     </Routes>
   );

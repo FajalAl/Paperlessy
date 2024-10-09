@@ -12,6 +12,15 @@ const Login = () => {
     
     // Default password to force reset
     const defaultPassword = "defaultPassword123!";
+    
+    // List of emails to redirect to UploadFile
+    const redirectEmails = [
+        "michael.williams@example.com",
+        "emily.davis@example.com",
+        "robert.johnson@example.com",
+        "jane.smith@example.com",
+        "john.doe@example.com"
+    ];
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -22,6 +31,9 @@ const Login = () => {
             if (password === defaultPassword) {
                 // Redirect to reset password page if it's the default password
                 navigate("/reset-password");
+            } else if (redirectEmails.includes(email)) {
+                // Redirect to UploadFile page if the email is in the specified list
+                navigate("/uploadfile");
             } else {
                 // Otherwise, navigate to the home page
                 navigate("/");
