@@ -1,69 +1,37 @@
-import { collection, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig.js';
 
-async function getReceiptDetails({ supermarketName, date }) {
+// Fetches receipts from Firestore based on supermarket name, date, and user ID
+async function getReceiptDetails({ supermarketName, date, setUserFormVisible }) {
   try {
-    const userId = await getAuthenticatedUserId();  // Ensure you fetch the authenticated user's ID
+    const userId = await getAuthenticatedUserId(); // Assumes an authenticated user ID is available
 
+    // Query Firestore for supermarket receipts
     const receiptQuery = query(
       collection(db, 'supermarket_receipts'),
       where('supermarket_name', '==', supermarketName),
       where('purchase_date', '==', date),
-      where('user_id', '==', userId) // Ensure this is the correct field matching the authenticated user
+      where('user_id', '==', userId)
     );
+
     const receiptSnap = await getDocs(receiptQuery);
 
+    // If no receipts found, show the form for the user to submit their data
     if (receiptSnap.empty) {
-      return []; // No receipts found
+      setUserFormVisible(true);
+      return [];
     }
 
-    // Continue processing receipts as before
-    const receipts = await Promise.all(receiptSnap.docs.map(async (doc) => {
+    // Map through the fetched receipts
+    const receipts = receiptSnap.docs.map((doc) => {
       const receiptData = doc.data();
-      const receiptId = doc.id;
-
-      const purchasesQuery = query(
-        collection(db, 'supermarket_purchases'),
-        where('receipt_id', '==', receiptId)
-      );
-      const purchasesSnap = await getDocs(purchasesQuery);
-      const purchases = purchasesSnap.docs.map(doc => doc.data());
-
-      const userRef = doc(db, 'common_users', userId); // Adjust to use userId
-      const userSnap = await getDoc(userRef);
-      if (!userSnap.exists()) {
-        throw new Error('User not found');
-      }
-      const userData = userSnap.data();
-
-      const transactionQuery = query(
-        collection(db, 'supermarketdata_transactions'),
-        where('customer_id', '==', userId) // Adjust to use userId
-      );
-      const transactionSnap = await getDocs(transactionQuery);
-      const transactionData = transactionSnap.docs.map(doc => doc.data())[0];
-
-      const supermarketRef = doc(db, 'supermarketdata_supermarkets', receiptData.supermarket_id);
-      const supermarketSnap = await getDoc(supermarketRef);
-      if (!supermarketSnap.exists()) {
-        throw new Error('Supermarket not found');
-      }
-      const supermarketData = supermarketSnap.data();
-
       return {
         supermarketName: receiptData.supermarket_name,
         date: receiptData.purchase_date,
-        operator: supermarketData.operator_name,
-        modeOfPayment: transactionData?.mode_of_payment ?? 'N/A',
-        cashBackEarned: "0.23",
-        slipNo: receiptId,
-        items: purchases.map(purchase => ({
-          description: purchase.item_name,
-          qty: purchase.quantity,
-          price: purchase.total_price
-        }))
+        items: receiptData.items,
+        receiptId: doc.id
       };
-    }));
+    });
 
     return receipts;
   } catch (error) {
@@ -72,4 +40,23 @@ async function getReceiptDetails({ supermarketName, date }) {
   }
 }
 
-export default getReceiptDetails;
+// Adds user data to Firestore in case no receipt is found
+async function addUserDataToFirestore(userData) {
+  try {
+    const userId = await getAuthenticatedUserId(); // Assumes user ID is available
+    const newUser = {
+      created_at: new Date().toISOString(),
+      email: userData.email,
+      name: userData.name,
+      user_id: userId
+    };
+
+    await addDoc(collection(db, 'supermarket_users'), newUser);
+    console.log('User data added successfully:', newUser);
+  } catch (error) {
+    console.error('Error adding user data:', error);
+  }
+}
+
+export { addUserDataToFirestore, getReceiptDetails };
+

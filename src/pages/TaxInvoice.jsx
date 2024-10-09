@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+/*import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import getReceiptDetails from './getReceiptDetails'; // Adjust the import path
+//import getReceiptDetails from './getReceiptDetails'; // Adjust the import path
 import styles from "./TaxInvoice.module.css";
 
 // Utility to parse query parameters
@@ -16,9 +16,9 @@ const TaxInvoice = () => {
   const supermarketName = query.get('supermarketName');
   const date = query.get('date'); // Use only the 'date' from receipts.jsx
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
+  /*useEffect(() => {
+    //const fetchData = async () => {
+      //try {
         const data = await getReceiptDetails({ supermarketName, date });
   
         if (data.length === 0) {
@@ -121,6 +121,6 @@ const TaxInvoice = () => {
       </div>
     </div>
   );
-};
+}; */
 
-export default TaxInvoice;
+//export default TaxInvoice;

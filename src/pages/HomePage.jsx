@@ -49,7 +49,7 @@ const HomePage = () => {
         <button className={styles.transactionsButton} onClick={() => handleNavigation("/transact")}>
           Transactions
         </button>
-        <button className={styles.receiptsButton} onClick={() => handleNavigation("/receipts")}>
+        <button className={styles.receiptsButton} onClick={() => handleNavigation("/receipt")}>
           Receipts
         </button>
         {userLoggedIn ? (

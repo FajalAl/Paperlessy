@@ -1,0 +1,49 @@
+.transaction-history {
+    background-color: white; /* White background for the container */
+    border-radius: 10px; /* Rounded corners for the container */
+    padding: 20px; /* Add padding around the container */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    margin: 20px 0; /* Margin for spacing from other elements */
+}
+
+.transaction-details {
+    background-color: #41dee9; /* Light green background for each transaction */
+    border-radius: 5px; /* Rounded corners for each transaction */
+    padding: 15px; /* Padding around the transaction details */
+    margin: 10px 0; /* Margin between transactions */
+    border: 1px solid #c1e6c1; /* Optional border for definition */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two-column layout */
+    gap: 20px; /* Spacing between columns */
+}
+
+.transaction-details p {
+    margin: 5px 0; /* Margin for each paragraph */
+    font-size: 1rem; /* Font size for transaction details */
+    color: #333; /* Darker font color */
+}
+
+.transaction-details strong {
+    color: #222; /* Bold text color */
+}
+
+.transaction-history h2 {
+    color: #333; /* Darker color for heading */
+    margin-bottom: 15px; /* Spacing below the heading */
+    font-size: 1.5rem; /* Larger font size for heading */
+    font-weight: bold;
+    text-align: center; /* Center the heading */
+}
+
+/* Style for 'No transactions found' message */
+.no-transactions {
+    color: #777; /* Gray color for no transactions message */
+    font-style: italic; /* Italicize for emphasis */
+    text-align: center; /* Center the message */
+    font-size: 1.2rem; /* Slightly larger font size */
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}

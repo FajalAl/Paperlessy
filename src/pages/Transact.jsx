@@ -1,94 +1,154 @@
-import { doc, getFirestore, runTransaction } from "firebase/firestore"; // Import necessary Firestore functions 
-import { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./Transact.module.css";
+import { getAuth } from 'firebase/auth'; // Import Firebase Auth
+import { collection, doc, getDocs, getFirestore, query, runTransaction, where } from 'firebase/firestore'; // Firestore imports
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Updated import
+import styles from './Transact.module.css';
 
 const Transact = () => {
-  const navigate = useNavigate();
-  const [senderNumber, setSenderNumber] = useState(""); // State for sender's phone number
-  const [receiverNumber, setReceiverNumber] = useState(""); // State for receiver's phone number
-  const [amount, setAmount] = useState(""); // State for transaction amount
-  const [error, setError] = useState(""); // State for error messages
-  const [responseMessage, setResponseMessage] = useState(""); // State for transaction response message
+  const navigate = useNavigate(); // Initialize navigate function
+  const auth = getAuth();
+  const [senderNumber, setSenderNumber] = useState('');
+  const [receiverNumber, setReceiverNumber] = useState('');
+  const [amount, setAmount] = useState('');
+  const [error, setError] = useState('');
+  const [responseMessage, setResponseMessage] = useState('');
+  const [transactionDetails, setTransactionDetails] = useState(null); // For transaction pop-up
+  const [authenticatedUser, setAuthenticatedUser] = useState(null);
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      setAuthenticatedUser(user);
+    } else {
+      navigate('/login'); // Redirect to login if no authenticated user
+    }
+  }, [auth, navigate]);
 
   const onPaperlessTextClick = useCallback(() => {
-    navigate("/"); // Navigate to the homepage
+    navigate('/');
   }, [navigate]);
 
+  const handleRecentTransactionsClick = () => {
+    navigate('/transaction-history'); // Use navigate to redirect to TransactionHistory component
+  };
+
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault();
     const firestore = getFirestore();
 
-    // Validate sender and receiver numbers (must be 9 digits)
-    const senderNumberValid = /^\d{9}$/.test(senderNumber); 
-    const receiverNumberValid = /^\d{9}$/.test(receiverNumber); 
+    if (!authenticatedUser) {
+      setError('No authenticated user found. Please log in.');
+      return;
+    }
+
+    const senderNumberValid = /^\d{9}$/.test(senderNumber);
+    const receiverNumberValid = /^\d{9}$/.test(receiverNumber);
+
     if (!senderNumberValid || !receiverNumberValid) {
-      setError("Sender and receiver numbers must be exactly 9 digits.");
+      setError('Sender and receiver numbers must be exactly 9 digits.');
       return;
     }
 
-    const numericAmount = parseFloat(amount); // Parse the amount to a number
+    const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount < 100 || numericAmount > 10000) {
-      setError("Amount must be between 100 and 10,000.");
+      setError('Amount must be between 100 and 10,000.');
       return;
     }
 
-    // Clear error if validation passes
-    setError("");
+    if (senderNumber === receiverNumber) {
+      setError('Sender and receiver numbers cannot be the same.');
+      return;
+    }
 
-    // Firestore transaction logic
+    setError(''); // Clear any previous errors
+
     try {
-      console.log("Sender Number:", senderNumber); // Debugging
-      console.log("Receiver Number:", receiverNumber); // Debugging
+      const userEmail = authenticatedUser.email;
 
+      // Query merged_user_data collection to find the user by email
+      const mergedUsersRef = collection(firestore, 'merged_user_data');
+      const senderQuery = query(mergedUsersRef, where('email', '==', userEmail));
+      const senderSnapshot = await getDocs(senderQuery);
+
+      if (senderSnapshot.empty) {
+        throw new Error('Authenticated user not found in merged_user_data.');
+      }
+
+      const senderDoc = senderSnapshot.docs[0];
+      const senderData = senderDoc.data();
+      const senderUserId = senderData.user_id;
+
+      // Query merged_user_data collection to find the receiver by phone number
+      const receiverQuery = query(mergedUsersRef, where('phone_number', '==', Number(receiverNumber)));
+      const receiverSnapshot = await getDocs(receiverQuery);
+
+      if (receiverSnapshot.empty) {
+        throw new Error('Receiver does not exist in merged_user_data.');
+      }
+
+      const receiverDoc = receiverSnapshot.docs[0];
+      const receiverData = receiverDoc.data();
+      const receiverUserId = receiverData.user_id;
+
+      // Start the Firestore transaction
       await runTransaction(firestore, async (transaction) => {
-        const senderRef = doc(firestore, "transactions_users", senderNumber); // Reference to the sender
-        const receiverRef = doc(firestore, "transactions_users", receiverNumber); // Reference to the receiver
-        
-        console.log("Sender Reference:", senderRef); // Debugging
-        console.log("Receiver Reference:", receiverRef); // Debugging
-        
+        const senderRef = doc(firestore, 'merged_user_data', senderUserId);
+        const receiverRef = doc(firestore, 'merged_user_data', receiverUserId);
+
         const senderDoc = await transaction.get(senderRef);
         const receiverDoc = await transaction.get(receiverRef);
 
-        if (!senderDoc.exists()) {
-          throw new Error("Sender does not exist.");
-        }
-
-        if (!receiverDoc.exists()) {
-          throw new Error("Receiver does not exist.");
-        }
+        if (!senderDoc.exists()) throw new Error('Sender does not exist in merged_user_data.');
+        if (!receiverDoc.exists()) throw new Error('Receiver does not exist in merged_user_data.');
 
         const senderData = senderDoc.data();
         const receiverData = receiverDoc.data();
 
-        // Check if the sender has sufficient balance
         if (senderData.balance < numericAmount) {
-          throw new Error("Insufficient balance.");
+          throw new Error('Insufficient balance.');
         }
 
-        // Update balances
-        const newSenderBalance = senderData.balance - numericAmount; // Deduct amount from sender's balance
-        const newReceiverBalance = receiverData.balance + numericAmount; // Add amount to receiver's balance
+        const newSenderBalance = senderData.balance - numericAmount;
+        const newReceiverBalance = receiverData.balance + numericAmount;
+        const transactionFee = numericAmount < 1000 ? 2 : 5;
 
-        transaction.update(senderRef, { balance: newSenderBalance }); // Update sender's balance
-        transaction.update(receiverRef, { balance: newReceiverBalance }); // Update receiver's balance
+        transaction.update(senderRef, { balance: newSenderBalance });
+        transaction.update(receiverRef, { balance: newReceiverBalance });
 
-        // Create a new transaction record
+        // Log the transaction
         const transactionData = {
           amount: numericAmount,
-          created_at: new Date(), // Current date and time
-          fee: numericAmount < 1000 ? 2 : 5, // Fee structure
-          receiver_phone: Number(receiverNumber), // Convert to number
-          sender_phone: Number(senderNumber), // Convert to number
+          created_at: new Date(),
+          fee: transactionFee,
+          receiver_phone: receiverData.phone_number,
+          sender_phone: senderData.phone_number,
         };
-        await transaction.set(doc(firestore, "transactions_transactions"), transactionData); // Save transaction record
+
+        // Generate a document ID for the transaction
+        const transactionDocRef = doc(collection(firestore, 'transactions_transactions'));
+        const docId = transactionDocRef.id;
+
+        // Store the transaction with the generated document ID
+        await transaction.set(transactionDocRef, { docId, ...transactionData });
+
+        // Update the transaction details for the pop-up
+        setTransactionDetails({
+          amount: numericAmount,
+          fee: transactionFee,
+          receiverPhone: receiverData.phone_number,
+          senderPhone: senderData.phone_number,
+          date: new Date().toLocaleString(),
+        });
       });
 
-      setResponseMessage("Transaction successful!"); // Set success message
+      setResponseMessage('Transaction successful!');
+      // Clear form fields after transaction
+      setSenderNumber('');
+      setReceiverNumber('');
+      setAmount('');
     } catch (error) {
-      console.error("Error during transaction:", error);
-      setError(error.message); // Set error message
+      console.error('Error during transaction:', error);
+      setError(error.message);
     }
   };
 
@@ -103,17 +163,14 @@ const Transact = () => {
         <div className={styles.transactionWrapper}>
           <h1 className={styles.transaction}>Transaction</h1>
         </div>
-        <h1 className={styles.recentTransactions}>Recent Transactions</h1>
+        <button className={styles.recentTransactionsButton} onClick={handleRecentTransactionsClick}>
+          Recent Transactions
+        </button>
       </section>
       <section className={styles.phoneNumberInputWrapper}>
         <div className={styles.phoneNumberInput}>
           <div className={styles.backgroundParent}>
-            <img
-              className={styles.backgroundIcon}
-              loading="lazy"
-              alt=""
-              src="/background@2x.png"
-            />
+            <img className={styles.backgroundIcon} loading="lazy" alt="" src="/background@2x.png" />
             <div className={styles.enterThePhoneContainer}>
               <ol className={styles.enterThePhoneNumberOfThe}>
                 <li className={styles.enterThePhone}>Enter the phone number of the sender and receiver.</li>
@@ -161,11 +218,11 @@ const Transact = () => {
                   placeholder="AMOUNT"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  min="100" // Minimum value for the amount
-                  max="10000" // Maximum value for the amount
+                  min="100"
+                  max="10000"
                   required
                 />
-                {error && <div className={styles.error}>{error}</div>} {/* Display error message */}
+                {error && <div className={styles.error}>{error}</div>}
               </div>
               <div className={styles.buttonContainer}>
                 <button className={styles.sendButton} type="submit">
@@ -173,10 +230,20 @@ const Transact = () => {
                 </button>
               </div>
             </form>
-            {responseMessage && <div className={styles.responseMessage}>{responseMessage}</div>} {/* Display response message */}
+            {responseMessage && <div className={styles.success}>{responseMessage}</div>}
           </div>
         </div>
       </section>
+      {transactionDetails && (
+        <div className={styles.transactionPopUp}>
+          <h2 className={styles.popUpHeading}>Transaction History</h2>
+          <p className={styles.popUpDetails}>Amount: KSH {transactionDetails.amount.toFixed(2)}</p>
+          <p className={styles.popUpDetails}>Fee: KSH {transactionDetails.fee.toFixed(2)}</p>
+          <p className={styles.popUpDetails}>Receiver Phone: +254 {transactionDetails.receiverPhone}</p>
+          <p className={styles.popUpDetails}>Sender Phone: +254 {transactionDetails.senderPhone}</p>
+          <p className={styles.popUpDetails}>Date: {transactionDetails.date}</p>
+        </div>
+      )}
     </div>
   );
 };

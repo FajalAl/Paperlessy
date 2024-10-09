@@ -10,6 +10,7 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
+  justify-content: space-between; /* Improved alignment */
   width: 100%;
   max-width: 1200px;
   margin-bottom: 40px;
@@ -57,23 +58,55 @@
   border-radius: 8px;
 }
 
-.videoSection {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.videoTitle {
-  font-size: 20px;
-  margin-bottom: 10px;
+.video-section {
+  width: 100vw; /* Full viewport width */
+  margin: 0;
+  padding: 0;
 }
 
 .video {
-  width: 100%;
-  max-width: 1000px; /* Increased max-width */
-  height: 600px; /* Increased height */
-  border: none;
-  border-radius: 8px;
+  width: 100%; /* Make each video take full width */
+  position: relative;
+  margin-bottom: 40px; /* Space between videos */
 }
+
+.video iframe {
+  width: 100%; /* Full width iframe */
+  height: 80vh; /* 80% of the viewport height */
+  border: none;
+}
+
+.video h2 {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 2.5rem; /* Adjust heading size */
+  color: #333; /* Text color */
+}
+
+
+.video-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Creates a responsive grid */
+  gap: 20px;
+  margin: 20px;
+}
+
+.video {
+  text-align: center;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.video p {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
 
 .ctaSection {
   text-align: center;
@@ -112,11 +145,21 @@
   .introSection {
     flex-direction: column;
     align-items: center;
+    margin-bottom: 30px; /* Reduced margin for small screens */
+  }
+
+  .introContent {
+    margin-right: 0;
+    margin-bottom: 20px; /* Added margin for spacing on small screens */
   }
 
   .video {
     width: 100%;
-    height: 400px; /* Increased height for smaller screens */
+    height: 400px; /* Adjusted height for smaller screens */
+  }
+
+  .ctaButton {
+    width: 90%; /* Ensures buttons are still large enough */
   }
 }
 
@@ -135,6 +178,10 @@
   }
 
   .video {
-    height: 300px; /* Increased height for very small screens */
+    height: 300px; /* Adjusted height for very small screens */
+  }
+
+  .ctaButton {
+    width: 100%; /* Full-width buttons for very small screens */
   }
 }
